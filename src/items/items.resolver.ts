@@ -1,15 +1,17 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
-import { ItemsService } from './items.service';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+
+import { CreateItemInput, UpdateItemInput } from './dto';
 import { Item } from './entities/item.entity';
-import { CreateItemInput } from './dto/create-item.input';
-import { UpdateItemInput } from './dto/update-item.input';
+import { ItemsService } from './items.service';
 
 @Resolver(() => Item)
 export class ItemsResolver {
   constructor(private readonly itemsService: ItemsService) {}
 
   @Mutation(() => Item)
-  createItem(@Args('createItemInput') createItemInput: CreateItemInput) {
+  async createItem(
+    @Args('createItemInput') createItemInput: CreateItemInput,
+  ): Promise<Item> {
     return this.itemsService.create(createItemInput);
   }
 

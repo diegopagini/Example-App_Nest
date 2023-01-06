@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateItemInput } from './dto/create-item.input';
-import { UpdateItemInput } from './dto/update-item.input';
+import { CreateItemInput, UpdateItemInput } from './dto';
+import { Item } from './entities/item.entity';
 
 @Injectable()
 export class ItemsService {
-  create(createItemInput: CreateItemInput) {
-    return 'This action adds a new item';
+  /**
+   * Method to create a item in the DB.
+   * @param {CreateItemInput} createItemInput
+   * @returns Promise<Item>
+   */
+  create(createItemInput: CreateItemInput): Promise<Item> {
+    return;
   }
 
   findAll() {
