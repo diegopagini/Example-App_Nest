@@ -1,17 +1,25 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { CreateItemInput, UpdateItemInput } from './dto';
 import { Item } from './entities/item.entity';
 
 @Injectable()
 export class ItemsService {
+  constructor(
+    @InjectRepository(Item)
+    private readonly itemsRepository: Repository<Item>,
+  ) {}
+
   /**
    * Method to create a item in the DB.
    * @param {CreateItemInput} createItemInput
    * @returns Promise<Item>
    */
-  create(createItemInput: CreateItemInput): Promise<Item> {
-    return;
+  async create(createItemInput: CreateItemInput): Promise<Item> {
+    const newItem = this.itemsRepository.create(createItemInput);
+    return await this.itemsRepository.save(newItem);
   }
 
   findAll() {
