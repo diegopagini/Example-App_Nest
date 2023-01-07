@@ -1,3 +1,4 @@
+import { ParseUUIDPipe } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { CreateItemInput, UpdateItemInput } from './dto';
@@ -35,7 +36,9 @@ export class ItemsResolver {
    * @returns Promise<Item>
    */
   @Query(() => Item, { name: 'item' })
-  async findOne(@Args('id', { type: () => ID }) id: string): Promise<Item> {
+  async findOne(
+    @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
+  ): Promise<Item> {
     return this.itemsService.findOne(id);
   }
 
