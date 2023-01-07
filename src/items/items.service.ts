@@ -22,8 +22,12 @@ export class ItemsService {
     return await this.itemsRepository.save(newItem);
   }
 
-  findAll() {
-    return [];
+  /**
+   * Method to get all the items.
+   * @returns Promise<Item[]>
+   */
+  async findAll(): Promise<Item[]> {
+    return await this.itemsRepository.find();
   }
 
   findOne(id: number) {

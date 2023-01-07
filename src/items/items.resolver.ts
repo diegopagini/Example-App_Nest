@@ -8,6 +8,11 @@ import { ItemsService } from './items.service';
 export class ItemsResolver {
   constructor(private readonly itemsService: ItemsService) {}
 
+  /**
+   * Method to create a item in the DB.
+   * @param {CreateItemInput} createItemInput
+   * @returns Promise<Item>
+   */
   @Mutation(() => Item)
   async createItem(
     @Args('createItemInput') createItemInput: CreateItemInput,
@@ -15,8 +20,12 @@ export class ItemsResolver {
     return this.itemsService.create(createItemInput);
   }
 
+  /**
+   * Method to get all the items.
+   * @returns Promise<Item[]>
+   */
   @Query(() => [Item], { name: 'items' })
-  findAll() {
+  async findAll(): Promise<Item[]> {
     return this.itemsService.findAll();
   }
 
