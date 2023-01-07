@@ -1,4 +1,4 @@
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { CreateItemInput, UpdateItemInput } from './dto';
 import { Item } from './entities/item.entity';
@@ -29,8 +29,13 @@ export class ItemsResolver {
     return this.itemsService.findAll();
   }
 
+  /**
+   * Method to get one item by id.
+   * @param {string} id
+   * @returns Promise<Item>
+   */
   @Query(() => Item, { name: 'item' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  async findOne(@Args('id', { type: () => ID }) id: string): Promise<Item> {
     return this.itemsService.findOne(id);
   }
 
