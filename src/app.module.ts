@@ -7,6 +7,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { join } from 'path';
 
 import { ItemsModule } from './items/items.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ItemsModule } from './items/items.module';
       username: process.env.DB_USERNAME,
     }),
     ItemsModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],
