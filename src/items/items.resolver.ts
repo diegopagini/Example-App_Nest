@@ -42,8 +42,15 @@ export class ItemsResolver {
     return this.itemsService.findOne(id);
   }
 
+  /**
+   * Method to update a item.
+   * @param {UpdateItemInput} updateItemInput
+   * @returns Promise<Item>
+   */
   @Mutation(() => Item)
-  updateItem(@Args('updateItemInput') updateItemInput: UpdateItemInput) {
+  updateItem(
+    @Args('updateItemInput') updateItemInput: UpdateItemInput,
+  ): Promise<Item> {
     return this.itemsService.update(updateItemInput.id, updateItemInput);
   }
 

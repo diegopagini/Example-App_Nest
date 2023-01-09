@@ -41,8 +41,16 @@ export class ItemsService {
     return item;
   }
 
-  update(id: number, updateItemInput: UpdateItemInput) {
-    return `This action updates a #${id} item`;
+  /**
+   * Method to update a item.
+   * @param {string} id
+   * @param {UpdateItemInput} updateItemInput
+   * @returns Promise<Item>
+   */
+  async update(id: string, updateItemInput: UpdateItemInput): Promise<Item> {
+    const item = await this.itemsRepository.preload(updateItemInput);
+    if (!item) throw new NotFoundException(`Item with id: ${id} not found`);
+    return this.itemsRepository.save(item);
   }
 
   remove(id: number) {
