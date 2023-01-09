@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { SignupInput } from 'src/auth/dto/inputs/signup.input';
@@ -49,9 +49,9 @@ export class UsersService {
    */
   async findOneByEmail(email: string): Promise<User> {
     try {
-      return this.usersRepository.findOneByOrFail({ email });
+      return await this.usersRepository.findOneByOrFail({ email });
     } catch (error) {
-      this.handleDBErros(error);
+      throw new NotFoundException(`${email} not found`);
     }
   }
 
