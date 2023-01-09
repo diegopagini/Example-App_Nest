@@ -10,3 +10,6 @@
 4. Levantar la imagen `docker-compose up -d` (docker desktop).
 5. Levantar el backend de Nest `yarn start:dev`.
 6. Visitar el sitio `localhost:3000/graphql`
+ 
+ 
+ 
