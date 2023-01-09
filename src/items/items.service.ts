@@ -61,6 +61,6 @@ export class ItemsService {
   async remove(id: string): Promise<Item> {
     const item = await this.findOne(id);
     await this.itemsRepository.remove(item);
-    return item;
+    return { ...item, id };
   }
 }
