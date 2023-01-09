@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { SignupInput } from 'src/auth/dto/inputs/signup.input';
 import { Repository } from 'typeorm';
 
@@ -22,7 +23,11 @@ export class UsersService {
    */
   async create(signupInput: SignupInput): Promise<User> {
     try {
-      const newUser = this.usersRepository.create(signupInput);
+      const newUser = this.usersRepository.create({
+        ...signupInput,
+        // bcrypt.hashSync(signupInput.password, 10) to encrypt the password before save it on the database.
+        password: bcrypt.hashSync(signupInput.password, 10),
+      });
       return await this.usersRepository.save(newUser);
     } catch (error) {
       this.handleDBErros(error);
@@ -39,11 +44,15 @@ export class UsersService {
 
   /**
    * Method to get a user.
-   * @param {string} id
+   * @param {string} email
    * @returns Promise<User>
    */
-  async findOne(id: string): Promise<User> {
-    return;
+  async findOneByEmail(email: string): Promise<User> {
+    try {
+      return this.usersRepository.findOneByOrFail({ email });
+    } catch (error) {
+      this.handleDBErros(error);
+    }
   }
 
   update(id: number, updateUserInput: UpdateUserInput) {
@@ -60,7 +69,7 @@ export class UsersService {
   }
 
   /**
-   *
+   * Method to hanlde the errors.
    * @param {any} error
    * The type never means that all the paths will never return a value.
    * Once it enter this must handle it with an exception and never return anything.
