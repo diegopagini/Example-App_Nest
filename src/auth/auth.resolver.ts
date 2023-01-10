@@ -8,7 +8,7 @@ import { LoginInput, SignupInput } from './dto/inputs';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthResponse } from './types/auth-response.type';
 
-@Resolver()
+@Resolver(() => AuthResponse)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 

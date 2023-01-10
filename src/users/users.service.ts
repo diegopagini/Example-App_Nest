@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { SignupInput } from 'src/auth/dto/inputs/signup.input';
 import { Repository } from 'typeorm';
 
+import { ValidRoles } from '../auth/enums/valid-roles.enum';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
 
@@ -36,10 +37,17 @@ export class UsersService {
 
   /**
    * Method to get all the users.
+   * @param {ValidRoles[]} roles
    * @returns Promise<User[]>
    */
-  async findAll(): Promise<User[]> {
-    return [];
+  async findAll(roles: ValidRoles[]): Promise<User[]> {
+    if (roles.length === 0) return await this.usersRepository.find();
+
+    return this.usersRepository
+      .createQueryBuilder()
+      .andWhere('ARRAY[roles] && ARRAY[:...roles]')
+      .setParameter('roles', roles)
+      .getMany();
   }
 
   /**
