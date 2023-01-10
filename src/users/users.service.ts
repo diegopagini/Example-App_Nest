@@ -43,7 +43,7 @@ export class UsersService {
   }
 
   /**
-   * Method to get a user.
+   * Method to get a user by email.
    * @param {string} email
    * @returns Promise<User>
    */
@@ -52,6 +52,19 @@ export class UsersService {
       return await this.usersRepository.findOneByOrFail({ email });
     } catch (error) {
       throw new NotFoundException(`${email} not found`);
+    }
+  }
+
+  /**
+   * Method to get a user by id.
+   * @param {string} id
+   * @returns Promise<User>
+   */
+  async findOneById(id: string): Promise<User> {
+    try {
+      return await this.usersRepository.findOneByOrFail({ id });
+    } catch (error) {
+      throw new NotFoundException(`${id} not found`);
     }
   }
 
