@@ -66,6 +66,20 @@ export class AuthService {
   }
 
   /**
+   * Method to revalidate the token.
+   * @param {User} user
+   * @returns AuthResponse
+   */
+  revalidateToken(user: User): AuthResponse {
+    const token = this.getJwToken(user.id);
+
+    return {
+      token,
+      user,
+    };
+  }
+
+  /**
    * Method to generate a JWT.
    * @param {string} id
    * @returns string

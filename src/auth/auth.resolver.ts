@@ -3,6 +3,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 
 import { AuthService } from './auth.service';
+import { CurrentUser } from './decorators/current-user.decorator';
 import { LoginInput, SignupInput } from './dto/inputs';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthResponse } from './types/auth-response.type';
@@ -35,9 +36,14 @@ export class AuthResolver {
     return this.authService.login(loginInput);
   }
 
+  /**
+   * Method to revalidate the token.
+   * @param {User} user
+   * @returns AuthResponse
+   */
   @Query(() => AuthResponse, { name: 'revalidate' })
   @UseGuards(JwtAuthGuard)
   revalidateToken(@CurrentUser() user: User): AuthResponse {
-    return this.authService.revalidateToken();
+    return this.authService.revalidateToken(user);
   }
 }
