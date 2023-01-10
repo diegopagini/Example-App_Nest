@@ -39,6 +39,7 @@ export class UsersService {
    * Method to get all the users.
    * @param {ValidRoles[]} roles
    * @returns Promise<User[]>
+   * @see https://orkhan.gitbook.io/typeorm/docs/eager-and-lazy-relations
    */
   async findAll(roles: ValidRoles[]): Promise<User[]> {
     if (roles.length === 0) return await this.usersRepository.find();
@@ -83,10 +84,15 @@ export class UsersService {
   /**
    * Method to do a logical deletion.
    * @param {string} id
+   * @param {User} adminUser
    * @returns Promise<User>
    */
-  async block(id: string): Promise<User> {
-    return;
+  async block(id: string, adminUser: User): Promise<User> {
+    const userToBlock = await this.findOneById(id);
+    userToBlock.isActive = false;
+    userToBlock.lastUpdatedBy = adminUser;
+
+    return await this.usersRepository.save(userToBlock);
   }
 
   /**

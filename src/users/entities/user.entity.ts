@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 @ObjectType()
@@ -33,4 +33,15 @@ export class User {
   })
   @Field(() => Boolean)
   isActive: boolean;
+
+  /**
+   * @see https://orkhan.gitbook.io/typeorm/docs/eager-and-lazy-relations
+   */
+  @ManyToOne(() => User, (user) => user.lastUpdatedBy, {
+    nullable: true,
+    lazy: true,
+  })
+  @JoinColumn({ name: 'lastUpdatedBy' })
+  @Field(() => User, { nullable: true })
+  lastUpdatedBy?: User;
 }

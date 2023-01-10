@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { ValidRoles } from 'src/auth/enums/valid-roles.enum';
@@ -20,7 +20,7 @@ export class UsersResolver {
   @Query(() => [User], { name: 'users' })
   findAll(
     @Args() validRoles: ValidRolesArgs,
-    @CurrentUser([ValidRoles.admin]) user: User,
+    @CurrentUser([ValidRoles.admin, ValidRoles.superUser]) user: User,
   ): Promise<User[]> {
     return this.usersService.findAll(validRoles.roles);
   }
@@ -32,22 +32,23 @@ export class UsersResolver {
    */
   @Query(() => User, { name: 'user' })
   findOne(
-    @Args('id', { type: () => ID }) id: string,
+    @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
     @CurrentUser([ValidRoles.admin]) user: User,
   ): Promise<User> {
-    return;
+    return this.usersService.findOneById(id);
   }
 
   /**
    * Method to do a logical deletion.
    * @param {string} id
+   * @param {User} adminUser
    * @returns Promise<User>
    */
-  @Mutation(() => User)
+  @Mutation(() => User, { name: 'blockUser' })
   blockUser(
-    @Args('id', { type: () => ID }) id: string,
+    @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
     @CurrentUser([ValidRoles.admin]) user: User,
   ): Promise<User> {
-    return this.usersService.block(id);
+    return this.usersService.block(id, user);
   }
 }
