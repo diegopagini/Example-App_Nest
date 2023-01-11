@@ -36,11 +36,13 @@ import { UsersModule } from './users/users.module';
         playground: false,
         plugins: [ApolloServerPluginLandingPageLocalDefault],
         context({ req }) {
-          const token = req.header.authorization?.replace('Bearer ', '');
-          if (!token) throw new Error('Token needed');
-
-          const payload = jwtService.decode(token);
-          if (!payload) throw new Error('Token not valid');
+          /**
+           * To hide the schema without a valid token.
+           * const token = req.header.authorization?.replace('Bearer ', '');
+           * if (!token) throw new Error('Token needed');
+           * const payload = jwtService.decode(token);
+           * if (!payload) throw new Error('Token not valid');
+           */
         },
       }),
     }),
