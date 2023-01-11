@@ -5,6 +5,7 @@ import { ValidRoles } from 'src/auth/enums/valid-roles.enum';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ValidRolesArgs } from './dto/args/roles.arg';
+import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -36,6 +37,20 @@ export class UsersResolver {
     @CurrentUser([ValidRoles.admin]) user: User,
   ): Promise<User> {
     return this.usersService.findOneById(id);
+  }
+
+  /**
+   * Method to update a user.
+   * @param {UpdateUserInput} updateUserInput
+   * @param {User} user
+   * @returns Promise<User>
+   */
+  @Mutation(() => User, { name: 'updateUser' })
+  async updateUser(
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+    @CurrentUser([ValidRoles.admin]) user: User,
+  ): Promise<User> {
+    return this.usersService.update(updateUserInput.id, updateUserInput, user);
   }
 
   /**

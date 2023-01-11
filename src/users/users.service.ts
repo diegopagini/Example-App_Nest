@@ -77,8 +77,28 @@ export class UsersService {
     }
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+  /**
+   * Method to update a user.
+   * @param {string} id
+   * @param {UpdateUserInput} updateUserInput
+   * @param {User} updateBy
+   * @returns Promise<User>
+   */
+  async update(
+    id: string,
+    updateUserInput: UpdateUserInput,
+    updateBy: User,
+  ): Promise<User> {
+    try {
+      const user = await this.usersRepository.preload({
+        ...updateUserInput,
+        id,
+      });
+      user.lastUpdatedBy = updateBy;
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      this.handleDBErros(error);
+    }
   }
 
   /**
