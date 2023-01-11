@@ -29,11 +29,13 @@ export class ItemsResolver {
 
   /**
    * Method to get all the items.
+   * @param {User} user
    * @returns Promise<Item[]>
+   * @see https://typeorm.io/#loading-from-the-database
    */
   @Query(() => [Item], { name: 'items' })
-  async findAll(): Promise<Item[]> {
-    return this.itemsService.findAll();
+  async findAll(@CurrentUser() user: User): Promise<Item[]> {
+    return this.itemsService.findAll(user);
   }
 
   /**

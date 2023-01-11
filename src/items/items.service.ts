@@ -26,10 +26,19 @@ export class ItemsService {
 
   /**
    * Method to get all the items.
+   * @param {User} user
    * @returns Promise<Item[]>
+   * @see https://typeorm.io/#loading-from-the-database
    */
-  async findAll(): Promise<Item[]> {
-    return this.itemsRepository.find();
+  async findAll(user: User): Promise<Item[]> {
+    return this.itemsRepository.find({
+      // SELECT * from items where userId = user.id
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
+    });
   }
 
   /**
