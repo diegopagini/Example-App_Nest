@@ -87,4 +87,19 @@ export class ItemsService {
     await this.itemsRepository.remove(item);
     return { ...item, id };
   }
+
+  /**
+   * Method to get the total number of the item by the user.
+   * @param {User} user
+   * @returns Promise<number>
+   */
+  async itemCountByUser(user: User): Promise<number> {
+    return await this.itemsRepository.count({
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
+    });
+  }
 }

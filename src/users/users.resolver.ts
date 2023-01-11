@@ -1,9 +1,10 @@
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { ValidRoles } from 'src/auth/enums/valid-roles.enum';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ItemsService } from '../items/items.service';
 import { ValidRolesArgs } from './dto/args/roles.arg';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
@@ -12,7 +13,10 @@ import { UsersService } from './users.service';
 @Resolver(() => User)
 @UseGuards(JwtAuthGuard)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly itemService: ItemsService,
+  ) {}
 
   /**
    * Method to get all the users.
@@ -65,5 +69,18 @@ export class UsersResolver {
     @CurrentUser([ValidRoles.admin]) user: User,
   ): Promise<User> {
     return this.usersService.block(id, user);
+  }
+
+  /**
+   * Method to get the total number of the item by the user.
+   * @param {User} user
+   * @returns Promise<number>
+   */
+  @ResolveField(() => Int, { name: 'itemCount' })
+  async itemCount(
+    @Parent() user: User,
+    @CurrentUser([ValidRoles.admin]) adminUser: User,
+  ): Promise<number> {
+    return this.itemService.itemCountByUser(user);
   }
 }
