@@ -44,33 +44,46 @@ export class ItemsService {
   /**
    * Method to get one item by id.
    * @param {string} id
+   * @param {User} user
    * @returns Promise<Item>
    */
-  async findOne(id: string): Promise<Item> {
-    const item = await this.itemsRepository.findOneBy({ id });
+  async findOne(id: string, user: User): Promise<Item> {
+    const item = await this.itemsRepository.findOneBy({
+      id,
+      user: {
+        id: user.id,
+      },
+    });
     if (!item) throw new NotFoundException(`Item with id: ${id} not found`);
+
     return item;
   }
 
   /**
    * Method to update a item.
-   * @param {string} id
    * @param {UpdateItemInput} updateItemInput
+   * @param {User} user
    * @returns Promise<Item>
    */
-  async update(id: string, updateItemInput: UpdateItemInput): Promise<Item> {
+  async update(updateItemInput: UpdateItemInput, user: User): Promise<Item> {
+    await this.findOne(updateItemInput.id, user);
     const item = await this.itemsRepository.preload(updateItemInput);
-    if (!item) throw new NotFoundException(`Item with id: ${id} not found`);
+    if (!item)
+      throw new NotFoundException(
+        `Item with id: ${updateItemInput.id} not found`,
+      );
+
     return this.itemsRepository.save(item);
   }
 
   /**
    * Method to delete a item.
    * @param {string} id
+   * @param {User} user
    * @returns Promise<Item>
    */
-  async remove(id: string): Promise<Item> {
-    const item = await this.findOne(id);
+  async remove(id: string, user: User): Promise<Item> {
+    const item = await this.findOne(id, user);
     await this.itemsRepository.remove(item);
     return { ...item, id };
   }
