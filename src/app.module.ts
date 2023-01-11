@@ -1,7 +1,8 @@
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloDriver } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
+import { JwtService } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { join } from 'path';
@@ -13,12 +14,38 @@ import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+    // GraphQl
+
+    /**
+     * Basic GrapQLModule configuration:
+     * GraphQLModule.forRoot<ApolloDriverConfig>({
+     * autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+     * driver: ApolloDriver,
+     * playground: false,
+     * plugins: [ApolloServerPluginLandingPageLocalDefault],
+     * }),
+     */
+
+    // Async GraphQlModule configuration:
+    GraphQLModule.forRootAsync({
       driver: ApolloDriver,
-      playground: false,
-      plugins: [ApolloServerPluginLandingPageLocalDefault],
+      imports: [AuthModule],
+      inject: [JwtService],
+      useFactory: async (jwtService: JwtService) => ({
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+        playground: false,
+        plugins: [ApolloServerPluginLandingPageLocalDefault],
+        context({ req }) {
+          const token = req.header.authorization?.replace('Bearer ', '');
+          if (!token) throw new Error('Token needed');
+
+          const payload = jwtService.decode(token);
+          if (!payload) throw new Error('Token not valid');
+        },
+      }),
     }),
+
+    // TypeOrm
     TypeOrmModule.forRoot({
       autoLoadEntities: true,
       database: process.env.DB_NAME,
@@ -29,9 +56,10 @@ import { UsersModule } from './users/users.module';
       type: 'postgres',
       username: process.env.DB_USERNAME,
     }),
+    // Modules
+    AuthModule,
     ItemsModule,
     UsersModule,
-    AuthModule,
   ],
   controllers: [],
   providers: [],
