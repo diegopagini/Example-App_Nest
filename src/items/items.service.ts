@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
+import { PaginationArgs } from '../common/dto/args/pagination.args';
 import { CreateItemInput, UpdateItemInput } from './dto';
 import { Item } from './entities/item.entity';
 
@@ -27,10 +28,13 @@ export class ItemsService {
   /**
    * Method to get all the items.
    * @param {User} user
+   * @param {PaginationArgs} pagination
    * @returns Promise<Item[]>
    * @see https://typeorm.io/#loading-from-the-database
    */
-  async findAll(user: User): Promise<Item[]> {
+  async findAll(user: User, pagination: PaginationArgs): Promise<Item[]> {
+    const { limit, offset } = pagination;
+
     return this.itemsRepository.find({
       // SELECT * from items where userId = user.id
       where: {
@@ -38,6 +42,9 @@ export class ItemsService {
           id: user.id,
         },
       },
+      // LIMIT 10
+      take: limit,
+      skip: offset,
     });
   }
 
