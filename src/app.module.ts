@@ -9,6 +9,7 @@ import { join } from 'path';
 
 import { AuthModule } from './auth/auth.module';
 import { ItemsModule } from './items/items.module';
+import { SeedModule } from './seed/seed.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -61,6 +62,7 @@ import { UsersModule } from './users/users.module';
     // Modules
     AuthModule,
     ItemsModule,
+    SeedModule,
     UsersModule,
   ],
   controllers: [],
