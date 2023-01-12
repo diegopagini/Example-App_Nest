@@ -9,8 +9,8 @@ async function bootstrap() {
   // Class-validator
   app.useGlobalPipes(
     new ValidationPipe({
+      // forbidNonWhitelisted: true. This is to avoid that any one send me no needed data.
       whitelist: true,
-      forbidNonWhitelisted: true,
     }),
   );
 

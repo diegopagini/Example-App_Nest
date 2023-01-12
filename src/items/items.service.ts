@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PaginationArgs, SearchArgs } from 'src/common/dto/args';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
-import { PaginationArgs } from '../common/dto/args/pagination.args';
 import { CreateItemInput, UpdateItemInput } from './dto';
 import { Item } from './entities/item.entity';
 
@@ -29,23 +29,46 @@ export class ItemsService {
    * Method to get all the items.
    * @param {User} user
    * @param {PaginationArgs} pagination
+   * @param {SearchArgs} searchArgs
    * @returns Promise<Item[]>
    * @see https://typeorm.io/#loading-from-the-database
    */
-  async findAll(user: User, pagination: PaginationArgs): Promise<Item[]> {
+  async findAll(
+    user: User,
+    pagination: PaginationArgs,
+    searchArgs: SearchArgs,
+  ): Promise<Item[]> {
     const { limit, offset } = pagination;
+    const { search } = searchArgs;
 
-    return this.itemsRepository.find({
-      // SELECT * from items where userId = user.id
-      where: {
-        user: {
-          id: user.id,
-        },
-      },
-      // LIMIT 10
-      take: limit,
-      skip: offset,
-    });
+    const queryBuilder = this.itemsRepository
+      .createQueryBuilder()
+      .take(limit)
+      .skip(offset)
+      .where(`"userId" = :userId`, { userId: user.id });
+
+    if (search) {
+      queryBuilder.andWhere('LOWER(name) like :name', {
+        name: `%${search.toLowerCase()}%`,
+      });
+    }
+
+    return queryBuilder.getMany();
+
+    /**
+     * Antoher way to do it:
+     *
+     * return this.itemsRepository.find({
+     *  where: { // SELECT * from items where userId = user.id
+     *   user: {
+     *   id: user.id,
+     *   },
+     *  name: Like(`%${search}%`), // SELECT * from items where name LIKE '%rice%'
+     *   },
+     *  take: limit,  // LIMIT 10
+     *  skip: offset,
+     * });
+     */
   }
 
   /**
