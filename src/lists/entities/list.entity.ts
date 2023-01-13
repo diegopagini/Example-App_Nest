@@ -13,7 +13,8 @@ export class List {
   @Field(() => String)
   name: string;
 
-  @ManyToOne(() => User, (user) => user.lists, { nullable: false })
+  @ManyToOne(() => User, (user) => user.lists, { nullable: false, lazy: true })
   @Index('userId-list-index')
+  @Field(() => User)
   user: User;
 }

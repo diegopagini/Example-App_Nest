@@ -65,7 +65,7 @@ export class ItemsResolver {
    * @param {User} user
    * @returns Promise<Item>
    */
-  @Mutation(() => Item)
+  @Mutation(() => Item, { name: 'updateItem' })
   updateItem(
     @Args('updateItemInput') updateItemInput: UpdateItemInput,
     @CurrentUser() user: User,
@@ -79,7 +79,7 @@ export class ItemsResolver {
    * @param {User} user
    * @returns Promise<Item>
    */
-  @Mutation(() => Item)
+  @Mutation(() => Item, { name: 'removeItem' })
   removeItem(
     @Args('id', { type: () => ID }) id: string,
     @CurrentUser() user: User,

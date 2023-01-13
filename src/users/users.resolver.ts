@@ -4,6 +4,8 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { ValidRoles } from 'src/auth/enums/valid-roles.enum';
 import { PaginationArgs, SearchArgs } from 'src/common/dto/args';
 import { Item } from 'src/items/entities/item.entity';
+import { List } from 'src/lists/entities/list.entity';
+import { ListsService } from 'src/lists/lists.service';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ItemsService } from '../items/items.service';
@@ -18,6 +20,7 @@ export class UsersResolver {
   constructor(
     private readonly usersService: UsersService,
     private readonly itemService: ItemsService,
+    private readonly listService: ListsService,
   ) {}
 
   /**
@@ -89,11 +92,11 @@ export class UsersResolver {
   }
 
   /**
-   * Method to get the total number of the item by the user.
+   * Method to get the items by the user.
    * @param {User} user
    * @param {PaginationArgs} paginationArgs
    * @param {SearchArgs} searchArgs
-   * @returns Promise<number>
+   * @returns Promise<Item[]>
    */
   @ResolveField(() => [Item], { name: 'items' })
   async getItemsByUser(
@@ -103,5 +106,35 @@ export class UsersResolver {
     @Args() searchArgs: SearchArgs,
   ): Promise<Item[]> {
     return this.itemService.findAll(user, paginationArgs, searchArgs);
+  }
+
+  /**
+   * Method to get the total number of the lists by the user.
+   * @param {User} user
+   * @returns Promise<number>
+   */
+  @ResolveField(() => Int, { name: 'listCount' })
+  async listCount(
+    @CurrentUser([ValidRoles.admin]) adminUser: User,
+    @Parent() user: User,
+  ): Promise<number> {
+    return this.listService.listCountByUser(user);
+  }
+
+  /**
+   * Method to get the lists by the user.
+   * @param {User} user
+   * @param {PaginationArgs} paginationArgs
+   * @param {SearchArgs} searchArgs
+   * @returns Promise<List[]>
+   */
+  @ResolveField(() => [List], { name: 'lists' })
+  async getListsByUser(
+    @CurrentUser([ValidRoles.admin]) adminUser: User,
+    @Parent() user: User,
+    @Args() paginationArgs: PaginationArgs,
+    @Args() searchArgs: SearchArgs,
+  ): Promise<List[]> {
+    return this.listService.findAll(user, paginationArgs, searchArgs);
   }
 }

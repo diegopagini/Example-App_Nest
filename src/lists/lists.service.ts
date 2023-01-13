@@ -102,4 +102,19 @@ export class ListsService {
     await this.listsRepository.remove(list);
     return { ...list, id };
   }
+
+  /**
+   * Method to get the total number of the lists by the user.
+   * @param {User} user
+   * @returns Promise<number>
+   */
+  async listCountByUser(user: User): Promise<number> {
+    return await this.listsRepository.count({
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
+    });
+  }
 }
