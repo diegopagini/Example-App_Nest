@@ -10,6 +10,7 @@ import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { ItemsModule } from './items/items.module';
+import { ListItemModule } from './list-item/list-item.module';
 import { ListsModule } from './lists/lists.module';
 import { SeedModule } from './seed/seed.module';
 import { UsersModule } from './users/users.module';
@@ -65,6 +66,7 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     CommonModule,
     ItemsModule,
+    ListItemModule,
     ListsModule,
     SeedModule,
     UsersModule,
