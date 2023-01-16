@@ -2,10 +2,12 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Item } from 'src/items/entities/item.entity';
+import { List } from 'src/lists/entities/list.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
 import { ItemsService } from '../items/items.service';
+import { ListItem } from '../list-item/entities/list-item.entity';
 import { UsersService } from '../users/users.service';
 import { SEED_ITEMS, SEED_USERS } from './data/seed-data';
 
@@ -21,6 +23,10 @@ export class SeedService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly userService: UsersService,
+    @InjectRepository(ListItem)
+    private readonly listItemRepository: Repository<ListItem>,
+    @InjectRepository(List)
+    private readonly listRepository: Repository<List>,
   ) {
     this.isProd = configService.get('STATE') === 'prod';
   }
@@ -48,9 +54,17 @@ export class SeedService {
   }
 
   /**
-   * Method to delete all the items and users in the database.
+   * Method to delete all the items, lists and users in the database.
    */
   async deleteDatabase(): Promise<void> {
+    // Delete listsItems.
+    await this.listItemRepository
+      .createQueryBuilder()
+      .delete()
+      .where({})
+      .execute();
+    // Delete lists.
+    await this.listRepository.createQueryBuilder().delete().where({}).execute();
     // Delete items.
     await this.itemsRepository
       .createQueryBuilder()
