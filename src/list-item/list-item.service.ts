@@ -114,8 +114,4 @@ export class ListItemService {
 
     return this.findOne(id);
   }
-
-  remove(id: number) {
-    return;
-  }
 }
